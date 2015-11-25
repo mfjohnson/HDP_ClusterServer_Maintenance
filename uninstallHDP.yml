@@ -1,194 +1,257 @@
 ---
 - hosts: all
+  name: Remove HDP installed packages
   serial: 10
   remote_user: root
   vars:
-    # password created with: python -c 'import crypt; print crypt.crypt("This is my Password", "$1$SomeSalt$")'
+    # password created with: python -c 'import crypt; print crypt.crypt(This is my Password, $1$SomeSalt$)'
 
   tasks:
+#  - name: stop ambari-agents
+#    command: "ambari-agent stop"
+#  - name: stop ambari-server
+#    command: "ambari-server stop"
   - name: remove hcatalog yum remove hcatalog\*
     yum: name=hcatalog state=absent
     
   - name: yum remove hive
     yum: name=hive state=absent
-    
-  - name: yum remove hive
-    command: "yum -y remove hive\\*"
+  - name: remove hive hcatalog
+    yum: name=hive-hcatalog state=absent
   - name: yum remove phoenix
-    command: "yum -y remove phoenix\\*"    
+    yum: name=phoenix state=absent
+   
   - name: yum remove hbase
-    command: "yum -y remove hbase\\*"
+    yum: name=hbase state=absent
   - name: yum remove zookeeper
-    command: "yum -y remove zookeeper\\*"
+    yum: name=zookeeper state=absent
   - name: yum remove oozie
-    command: "yum -y remove oozie\\*"
+    yum: name=oozie state=absent
   - name: yum remove pig
-    command: "yum -y remove pig\\*"
+    yum: name=pig state=absent
   - name: yum remove knox
-    command: "yum -y remove knox\\*"
+    yum: name=knox state=absent
   - name: yum remove snappy
-    command: "yum -y remove snappy\\*"
+    yum: name=snappy state=absent
   - name: yum remove storm
-    command: "yum -y remove storm\\*"   
+    yum: name=storm state=absent
   - name: yum remove kafka
-    command: "yum -y remove kafka\\*"        
+    yum: name=kafka state=absent
   - name: yum remove ranger
-    command: "yum -y remove ranger\\*"   
+    yum: name=ranger state=absent
   - name: yum remove flume
-    command: "yum -y remove flume\\*"    
+    yum: name=flume state=absent
   - name: yum remove sqoop
-    command: "yum -y remove sqoop\\*"        
+    yum: name=sqoop state=absent
   - name: yum remove hadoop-lzo
-    command: "yum -y remove hadoop-lzo\\*"
+    yum: name=hadoop-lzo state=absent
   - name: yum remove falcon
-    command: "yum -y remove falcon\\*"
+    yum: name=falcon state=absent
   - name: yum remove accumulo
-    command: "yum -y remove accumulo\\*"              
+    yum: name=accumulo state=absent              
   - name: yum remove hadoop
-    command: "yum -y remove hadoop\\*"
+    yum: name=hadoop state=absent
   - name: yum remove extjs-2.2-1 mysql-connector-java-5.0.8-1
-    command: "yum -y remove mysql-connector\\*"
+    yum: name=mysql-connector state=absent
   - name: yum remove mysql-libs
-    command: "yum -y remove mysql-libs\\*"    
+    yum: name=mysql-libs state=absent
   - name: yum remove slider
-    command: "yum -y remove slider\\*"    
+    yum: name=slider state=absent
+ 
   - name: yum remove postgresql
-    command: "yum -y remove postgresql\\*"     
+    yum: name=postgresql state=absent
+
   - name: yum remove ambari-log4j
-    command: "yum -y remove ambari-log4j\\*"     
+    yum: name=ambari-log4j state=absent
           
   - name: yum erase ambari-metrics
-    command: "yum -y erase ambari-metrics\\*"
+    yum: name=ambari-metrics state=absent
 
   - name: yum erase ambari-agent
-    command: "yum -y erase ambari-agent"
+    yum: name=ambari-agent state=absent
+
   - name: yum erase ambari-server
-    command: "yum -y erase ambari-server"
+    yum: name=ambari-server state=absent
+
   - name: yum erase bigtop
-    command: "yum -y erase bigtop-tomcat\\*"  
+    yum: name=bigtop state=absent
+
   - name: yum erase hdp-select
-    command: "yum -y erase hdp-select\\*"
+    yum: name=hdp-select state=absent
+
   - name: yum erase bigtop-jsvc
-    command: "yum -y erase bigtop-jsvc"          
+    yum: name=bigtop-jsvc state=absent
+
   - name: yum erase mysql
-    command: "yum -y erase mysql"
+    yum: name=mysql state=absent
+  - name: yum erase ganglie-devel
+    yum: name=ganglia-devel state=absent
+  - name: yum erase ganglie-devel
+    yum: name=ganglia-devel state=absent
+  - name: yum erase ganglia-web
+    yum: name=ganglia-web state=absent
+  - name: yum erase ganglie-gmeta
+    yum: name=ganglia-gmetad state=absent
+  - name: yum erase libganglia
+    yum: name=libganglia state=absent
+  - name: yum erase ganglie-devel
+    yum: name=ganglia-devel state=absent
+  - name: yum erase postgresql-libs
+    yum: name=postgresql-libs state=absent
+
+
+- hosts: all
+  name: Remove HDP related config directories
+  serial: 10
+  remote_user: root
+  tasks:
   - name: erase hadoop conf
-    command: "rm -rf /etc/hadoop"
+    file: path=/etc/hadoop state=absent
   - name: erase hbase conf
-    command: "rm -rf /etc/hbase"    
+    file: path=/etc/hbase  state=absent   
   - name: erase hive conf
-    command: "rm -rf /etc/hive"
+    file: path=/etc/hive state=absent
   - name: erase hive-webhcat conf
-    command: "rm -rf /etc/hive-webhcat"
+    file: path=/etc/hive-webhcat state=absent
   - name: erase flume conf
-    command: "rm -rf /etc/flume"
+    file: path=/etc/flume state=absent
   - name: erase falcon conf
-    command: "rm -rf /etc/falcon"     
+    file: path=/etc/falcon state=absent
   - name: erase ambari-metrics-monitor conf
-    command: "rm -rf /etc/ambari-metrics-monitor"   
+    file: path=/etc/ambari-metrics-monitor  state=absent
   - name: erase hadoop-httpfs conf
-    command: "rm -rf /etc/hadoop-httpfs"
+    file: path=/etc/hadoop-httpfs state=absent
   - name: erase oozie conf
-    command: "rm -rf /etc/oozie"  
+    file: path=/etc/oozie state=absent
   - name: erase storm conf
-    command: "rm -rf /etc/storm"
+    file: path=/etc/storm  state=absent
   - name: erase storm-slider-client conf
-    command: "rm -rf /etc/storm-slider-client"  
+    file: path=/etc/storm-slider-client state=absent
   - name: erase tez conf
-    command: "rm -rf /etc/tez"
+    file: path=/etc/tez  state=absent
   - name: erase ambari-agent conf
-    command: "rm -rf /etc/ambari-agent"
+    file: path=/etc/ambari-agent state=absent
   - name: erase ambari-server conf
-    command: "rm -rf /etc/ambari-server"
+    file: path=/etc/ambari-server state=absent
   - name: erase kafka conf
-    command: "rm -rf /etc/kafka"
+    file: path=/etc/kafka state=absent
   - name: erase knox conf
-    command: "rm -rf /etc/knox"
+    file: path=/etc/knox state=absent
   - name: erase phoenix conf
-    command: "rm -rf /etc/phoenix"
+    file: path=/etc/phoenix state=absent
   - name: erase sqoop conf
-    command: "rm -rf /etc/sqoop"
+    file: path=/etc/sqoop state=absent
   - name: erase zookeeper conf
-    command: "rm -rf /etc/zookeeper"
+    file: path=/etc/zookeeper state=absent
   - name: erase hive-hcator conf
-    command: "rm -rf /etc/hive-hcatalog"
+    file: path=/etc/hive-hcatalog state=absent
   - name: erase slider conf
-    command: "rm -rf /etc/slider"
-    
+    file: path=/etc/slider state=absent
+  - name: erase ambar.repo.bak
+    file: path=/etc/ambari.repo.bak state=absent
+  - name: erase ganglia
+    file: path=/etc/ganglia state=absent 
+  - name: erase HDP repos
+    file: path=/etc/yum.repos.d/HDP.repo
+  - name: erase HDP-utils repos
+    file: path=/etc/yum.repos.d/HDP-UTILS.repo    
+  - name: erase ambari repos
+    file: path=/etc/yum.repos.d/ambari.repo
     # Delete the HDP /var/run directories
   - name: erase var run Hadoop conf
-    command: "rm -rf /var/run/hadoop"
+    file: path=/var/run/hadoop state=absent
   - name: erase var run hbase conf
-    command: "rm -rf /var/run/hbase"     
+    file: path=/var/run/hbase  state=absent
   - name: erase var run zookeeper conf
-    command: "rm -rf /var/run/zookeeper"    
+    file: path=/var/run/zookeeper state=absent
   - name: erase var run flume conf
-    command: "rm -rf /var/run/flume"
+    file: path=/var/run/flume state=absent
   - name: erase var run webhcat conf
-    command: "rm -rf /var/run/webhcat"
+    file: path=/var/run/webhcat state=absent
   - name: erase var run Hadoop-yarn conf
-    command: "rm -rf /var/run/hadoop-yarn"
+    file: path=/var/run/hadoop-yarn state=absent
   - name: erase var run Hadoop-mapreduce conf
-    command: "rm -rf /var/run/hadoop-mapreduce"
+    file: path=/var/run/hadoop-mapreduce state=absent
   - name: erase var run knox conf
-    command: "rm -rf /var/run/knox"
+    file: path=/var/run/knox state=absent
   - name: erase var run kafka conf
-    command: "rm -rf /var/run/kafka"      
+    file: path=/var/run/kafka   state=absent
+  - name: erase var run ambari-server conf
+    file: path=/var/run/ambari-server   state=absent
+  - name: erase var run ganglia conf
+    file: path=/var/run/ganglia   state=absent
+  - name: erase var run storm conf
+    file: path=/var/run/storm   state=absent
     
     # Delete the HDP var log files                   
   - name: erase var log Hadoop conf
-    command: "rm -rf /var/log/hadoop"    
+    file: path=/var/log/hadoop state=absent
   - name: erase var log hbase conf
-    command: "rm -rf /var/log/hbase"    
+    file: path=/var/log/hbase state=absent
   - name: erase var log zookeeper conf
-    command: "rm -rf /var/log/zookeeper"        
+    file: path=/var/log/zookeeper     state=absent
   - name: erase var log flume conf
-    command: "rm -rf /var/log/flume"        
+    file: path=/var/log/flume     state=absent
   - name: erase var log storm conf
-    command: "rm -rf /var/log/storm"
+    file: path=/var/log/storm state=absent
   - name: erase var log hive conf
-    command: "rm -rf /var/log/hadoop-yarn"          
+    file: path=/var/log/hadoop-yarn   state=absent    
   - name: erase var log flume conf
-    command: "rm -rf /var/log/hadoop-mapreduce"               
+    file: path=/var/log/hadoop-mapreduce         state=absent   
   - name: erase var log flume conf
-    command: "rm -rf /var/log/knox"     
+    file: path=/var/log/knox  state=absent
   - name: erase var log flume conf
-    command: "rm -rf /var/log/kafka"         
+    file: path=/var/log/kafka      state=absent
+  - name: erase ambari-server logs
+    file: path=/var/log/ambari-server state=absent
+  - name: erase ambari-agent logs
+    file: path=/var/log/ambari-agent state=absent
 
     # Delete the HD /usr/lib files
   - name: erase usr lib hadoop conf
-    command: "rm -rf /usr/lib/hadoop"         
+    file: path=/usr/lib/hadoop      state=absent
   - name: erase usr lib flume conf
-    command: "rm -rf /usr/lib/flume"
+    file: path=/usr/lib/flume state=absent
   - name: erase usr lib storm conf
-    command: "rm -rf /usr/lib/storm"
+    file: path=/usr/lib/storm state=absent
   - name: erase usr lib hive conf
-    command: "rm -rf /usr/lib/hive"            
+    file: path=/usr/lib/hive         state=absent
   - name: erase usr lib oozie conf
-    command: "rm -rf /usr/lib/oozie"
+    file: path=/usr/lib/oozie state=absent
   - name: erase usr lib hadoop-hdfs conf
-    command: "rm -rf /usr/lib/hadoop-hdfs"
+    file: path=/usr/lib/hadoop-hdfs state=absent
   - name: erase usr lib knox conf
-    command: "rm -rf /usr/lib/knox"
-    
+    file: path=/usr/lib/knox state=absent
+  - name: erase /var/lib/ambari-agent
+    file: path=/usr/lib/ambari-agent state=absent
+  - name: erase ambari-server /var/lib
+    file: path=/usr/lib/ambari-server state=absent
+  - name: erase pgsql
+    file: path=/usr/lib/pgsql   state=absent  
+  - name: erase zookeeper
+    file: path=/usr/lib/zookeeper state=absent
+
     # Delete the tmp files
   - name: erase tmp ambari-qa
-    command: "rm -rf /tmp/ambari-qa"                
+    file: path=/tmp/ambari-qa      state=absent       
   - name: erase tmp sqoop-ambari-qa
-    command: "rm -rf /tmp/sqoop-ambari-qa"
+    file: path=/tmp/sqoop-ambari-qa state=absent
   - name: erase tmp hadoop-hdfs
-    command: "rm -rf /tmp/hadoop-hdfs"
+    file: path=/tmp/hadoop-hdfs state=absent
   - name: erase tmp hadoop hbase
-    command: "rm -rf /hadoop/hbase"            
+    file: path=/hadoop/hbase         state=absent
   - name: erase hdp current files
-    command: "rm -rf /usr/hdp/2.2.6.0-2800"
+    file: path=/usr/hdp/2.2.6.0-2800 state=absent
   - name: erase hdp current files
-    command: "rm -rf /usr/hdp"    
-    
-  - name: Reboot all servers
-    command: "reboot now"
-        
-    
+    file: path=/usr/hdp state=absent
+  - name: remove root hadoop directory
+    file: path=/hadoop state=absent
+  - name: ease current java version from /usr/jdk64
+    file: path=/usr/jdk64 state=absent
+  - name: delete /var/lib/ambari-server
+    file: path=/var/lib/ambari-server state=absent
+
+  
     
 
     

@@ -1,0 +1,55 @@
+---
+- name: Confirm Oracle Express Pre-requisites ready
+  hosts: ambari
+  serial: 10
+  remote_user: root
+  tasks:
+  - name: retrieve the eth0 information
+    debug: var=ansible_eth0
+  - name: ensure latest version glibc
+    yum: name=glibc state=latest
+  - name: ensure latest version of make
+    yum: name=make state=latest
+  - name: ensure latest version binutils
+    yum: name=binutils state=latest
+  - name: ensure latest version of libaio
+    yum: name=libaio state=latest
+  - name: install libselinux-python
+    yum: name=libselinux-python state=latest
+  - name: install bc package
+    yum: name=bc state=latest
+  - name: install flex package
+    yum: name=flex state=latest
+  - name: install unixODBC
+    yum: name=unixODBC state=latest
+
+- name: Set Kernel parameters for Centos
+  hosts: ambari
+  serial: 10
+  remote_user: root
+  tasks:
+  - name: update semmsl to 250
+    sysctl: name=kernel.sem value="250 32000 100 128" state=present
+  - name: update file-max parameter to 6815744
+    sysctl: name=fs.file-max value=6815744
+
+
+- name: Copy Oracle express, unzip and commence silent installation
+  hosts: ambari
+  serial: 10
+  remote_user: root
+  vars:
+    oracleExpress: oracle-xe-11.2.0-1.0.x86_64
+    oracleExpressResponse: OracleExpress.rsp
+  tasks:
+#  - name: Copy the Oracle Express from the disk image directory
+#    unarchive: copy=yes src=disk_images/{{ oracleExpress }}.zip dest=/
+  - name: Prepare response file template
+    template: src={{ oracleExpressResponse }} dest=/
+  - name: make certain we are starting out fresh
+    yum: name={{ oracleExpress }} state=absent
+  - name: RPM install of Oracle Express
+    yum: name=/Disk1/{{ oracleExpress }}.rpm 
+#    command: "rpm -ivh Disk1/{{ oracleExpress }} > xeRPMInstall.log"
+#  - name: Run silent Oracle Express configuration 
+#   command: "/etc/init.d/oracle-xe configure responseFIle={{ oracleExpressResponse }} > XEsilentinstall.log"

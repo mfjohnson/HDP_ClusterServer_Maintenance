@@ -54,8 +54,8 @@
 - hosts: ambari
   remote_user: root
   vars:
-#    hdpRepo: http://public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/1.6.1/ambari.repo
-    hdpRepo: http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.0.1/ambari.repo
+    hdpRepo: http://public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/1.6.1/ambari.repo
+#    hdpRepo: http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.0.1/ambari.repo
   tasks:
   - name: Setup up Ambari repository
     command: "wget -nv {{ hdpRepo }} -O /etc/yum.repos.d/ambari.repo"
