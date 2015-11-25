@@ -1,0 +1,11 @@
+---
+- hosts: all
+  serial: 10
+  remote_user: root
+  vars:
+    # password created with: python -c 'import crypt; print crypt.crypt("This is my Password", "$1$SomeSalt$")'
+    hivePassword: hi8S2iQw/0uQI
+  tasks:
+  - name: ensure {{ ansible_host }} is at the latest version
+    command: "ls"
+

@@ -1,0 +1,37 @@
+---
+- name: Install Oracle
+  hosts: ambari
+  serial: 10
+  remote_user: root
+  vars:
+    hdpRepo: wget https://public-yum.oracle.com/public-yum-ol6.repo
+  tasks:
+  - name: Step 1 Install Oracle Dependencies in repolist
+    get_url: url="{{hdpRepo}}" dest=/etc/yum.repos.d/ambari.repo
+  - name: Create the Oracle user
+    user: name=orgacle shell /bin/bash groups=oracle password=oracle
+  - name: Download the GPG key
+    command: "wget https://public-yum.oracle.com/RPM-GPG-KEY-oracle-ol6 -O /etc/pki/rpm-gpg/RPM-GPG-KEY-oracle"
+  - name: install the actual oracle pre-requites
+    command: "yum install oracle-rdbms-server-11gR2-preinstall"
+
+
+- name: Configure Oracle profile
+  hosts: ambari
+  serial: 10
+  remote_user: oracle
+  tasks:
+  - name: Define the Oracle user bash_profile
+    template: src=.bash_profile.j2 dest=~/.bash_profile
+
+- name: Setup the oracle user properties
+  hosts: ambari
+  serial: 10
+  remote_user: root
+  tasks:
+  - name: Define the Oracle user bash_profile
+    file: path=/u01/app/oracle/product/11.2.0/dbhome_1 state=directory owner=oracle:oinstall mode=0775
+
+
+
+    

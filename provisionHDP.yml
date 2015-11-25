@@ -1,0 +1,81 @@
+    # password created with: python -c 'import crypt; print crypt.crypt("This is my Password", "$1$SomeSalt$")'
+---
+- hosts: all
+  serial: 10
+  remote_user: root
+  tasks:
+  - name: ensure wget is at the latest version
+    yum: name=wget state=latest
+  - name: ensure unzip is at the latest version
+    yum: name=unzip state=latest
+#  - name: ensure mysql is at the latest version
+#    yum: name=mysql state=latest
+  - name: ensure yum-utils is at the latest version
+    yum: name=yum-utils state=latest
+  - name: ensure createrepo is at the latest version
+    yum: name=createrepo state=latest
+  - name: ensure  yum-plugin-priorities is at the latest version
+    yum: name=yum-plugin-priorities state=latest
+  - name: ensure git is at the latest version
+    yum: name=git state=latest
+  - name: ensure ntp is at the latest version
+    yum: name=ntp state=latest 
+  - name: ensure ntpdate is at the latest version
+    yum: name=ntpdate state=latest 
+  - name: ensure ntp-doc is at the latest version
+    yum: name=ntp-doc state=latest 
+  - name: ensure linselinux-python is at the latest version
+    yum: name=libselinux-python state=latest    
+
+  - name: Stop iptables
+    command: "/etc/init.d/iptables stop"
+    
+  - name: disable iptables
+    command: "chkconfig iptables off"
+    
+  - name: Retrieve memory from each of the servers
+    command: "free -m"
+
+  - selinux: state=disabled
+  - name: Ensure that NTP is up and running
+    service: name=ntpd state=started enabled=yes
+    
+  - name: Ensure that NTP is up and running
+    service: name=ntpd state=started enabled=yes
+  - name: write the standard server host file
+    template:
+      src: hosts.j2
+      dest: /etc/hosts
+      
+  - name: Turn off transparent huge pages
+    command: "echo 'never' > /sys/kernel/mm/transparent_hugepage/enabled"
+      
+      
+- hosts: ambari
+  remote_user: root
+  vars:
+#    hdpRepo: http://public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/1.6.1/ambari.repo
+    hdpRepo: http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.0.1/ambari.repo
+  tasks:
+  - name: Setup up Ambari repository
+    command: "wget -nv {{ hdpRepo }} -O /etc/yum.repos.d/ambari.repo"
+  - name: Verify YUM repolist
+    command: "yum repolist"
+  - name: Install ambari server
+    yum: name=ambari-server 
+  - name: Setup ambari-server with defaults
+    command: "ambari-server setup -s"
+  - name: startup ambari-server
+    command: "ambari-server start"
+      
+
+      
+
+
+      
+    
+        
+        
+        
+
+

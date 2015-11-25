@@ -1,0 +1,53 @@
+---
+- name: Stop Ambari-server
+  hosts: ambari
+  serial: 10
+  remote_user: root
+  tasks:
+  - name: Stop Ambari server
+    command: "ambari-server stop" 
+
+
+- name: Clean up all hosts and setup ambari agent
+  hosts: all
+  serial: 10
+  remote_user: root
+  tasks:
+  - name: Stop Ambari agents
+    command: "ambari-agent stop" 
+  - name: Update repolist for 2.0.2
+    command: "wget -nv http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.0.2/ambari.repo -O /etc/yum.repos.d/ambari.repo"   
+  - name: Clean up yum 
+    command: "yum clean all"
+  - name: Log the ambari component installed on ALL host nodes
+    command: "rpm -qa | grep ambari > ambariComponets.log"     
+  - name: preserving all of the /etc/hadoop config files
+    command: "tar vczf Ambari16etcConfigs.gz /etc/"
+  - name: upgrade abari agent and ambari-log4j
+    command: "yum -y upgrade ambari-agent ambari-log4j"
+      
+
+- name: Upgrade Ambari-server and start the ambari server
+  hosts: ambari
+  serial: 10
+  remote_user: root
+  tasks:
+  - name: Upgrade Ambari server"
+    command: "yum -y upgrade ambari-server ambari-log4j > ambari-server-upgrade.log"   
+  - name: Start ambari-server
+    command: "ambari-server start > ambari-server-start.log"   
+  - name: Upgrade ambari server
+    command: "ambari-server upgrade" 
+   
+# Prepare all host nodes stopping at step 15 of the docs
+- name: Start all of the ambari agents
+  hosts: all
+  serial: 10
+  remote_user: root
+  tasks:
+  - name: Start all Ambari agents
+    command: "rpm -qa | grep ambari > ambariAgentsComponets.log"        
+  - name: Start ambari-agent
+    command: "ambari-agent start > ambari-agent-start.log"            
+   
+   

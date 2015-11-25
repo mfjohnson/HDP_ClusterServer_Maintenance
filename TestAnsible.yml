@@ -1,0 +1,8 @@
+---
+- hosts: all
+  name: Remove HDP installed packages
+  serial: 10
+  remote_user: root
+  tasks:
+  - name: delete ganglia
+    apt_rpm: pkg=ganglia state=absent

@@ -1,0 +1,197 @@
+---
+- hosts: all
+  serial: 10
+  remote_user: root
+  vars:
+    # password created with: python -c 'import crypt; print crypt.crypt("This is my Password", "$1$SomeSalt$")'
+
+  tasks:
+  - name: remove hcatalog yum remove hcatalog\*
+    yum: name=hcatalog state=absent
+    
+  - name: yum remove hive
+    yum: name=hive state=absent
+    
+  - name: yum remove hive
+    command: "yum -y remove hive\\*"
+  - name: yum remove phoenix
+    command: "yum -y remove phoenix\\*"    
+  - name: yum remove hbase
+    command: "yum -y remove hbase\\*"
+  - name: yum remove zookeeper
+    command: "yum -y remove zookeeper\\*"
+  - name: yum remove oozie
+    command: "yum -y remove oozie\\*"
+  - name: yum remove pig
+    command: "yum -y remove pig\\*"
+  - name: yum remove knox
+    command: "yum -y remove knox\\*"
+  - name: yum remove snappy
+    command: "yum -y remove snappy\\*"
+  - name: yum remove storm
+    command: "yum -y remove storm\\*"   
+  - name: yum remove kafka
+    command: "yum -y remove kafka\\*"        
+  - name: yum remove ranger
+    command: "yum -y remove ranger\\*"   
+  - name: yum remove flume
+    command: "yum -y remove flume\\*"    
+  - name: yum remove sqoop
+    command: "yum -y remove sqoop\\*"        
+  - name: yum remove hadoop-lzo
+    command: "yum -y remove hadoop-lzo\\*"
+  - name: yum remove falcon
+    command: "yum -y remove falcon\\*"
+  - name: yum remove accumulo
+    command: "yum -y remove accumulo\\*"              
+  - name: yum remove hadoop
+    command: "yum -y remove hadoop\\*"
+  - name: yum remove extjs-2.2-1 mysql-connector-java-5.0.8-1
+    command: "yum -y remove mysql-connector\\*"
+  - name: yum remove mysql-libs
+    command: "yum -y remove mysql-libs\\*"    
+  - name: yum remove slider
+    command: "yum -y remove slider\\*"    
+  - name: yum remove postgresql
+    command: "yum -y remove postgresql\\*"     
+  - name: yum remove ambari-log4j
+    command: "yum -y remove ambari-log4j\\*"     
+          
+  - name: yum erase ambari-metrics
+    command: "yum -y erase ambari-metrics\\*"
+
+  - name: yum erase ambari-agent
+    command: "yum -y erase ambari-agent"
+  - name: yum erase ambari-server
+    command: "yum -y erase ambari-server"
+  - name: yum erase bigtop
+    command: "yum -y erase bigtop-tomcat\\*"  
+  - name: yum erase hdp-select
+    command: "yum -y erase hdp-select\\*"
+  - name: yum erase bigtop-jsvc
+    command: "yum -y erase bigtop-jsvc"          
+  - name: yum erase mysql
+    command: "yum -y erase mysql"
+  - name: erase hadoop conf
+    command: "rm -rf /etc/hadoop"
+  - name: erase hbase conf
+    command: "rm -rf /etc/hbase"    
+  - name: erase hive conf
+    command: "rm -rf /etc/hive"
+  - name: erase hive-webhcat conf
+    command: "rm -rf /etc/hive-webhcat"
+  - name: erase flume conf
+    command: "rm -rf /etc/flume"
+  - name: erase falcon conf
+    command: "rm -rf /etc/falcon"     
+  - name: erase ambari-metrics-monitor conf
+    command: "rm -rf /etc/ambari-metrics-monitor"   
+  - name: erase hadoop-httpfs conf
+    command: "rm -rf /etc/hadoop-httpfs"
+  - name: erase oozie conf
+    command: "rm -rf /etc/oozie"  
+  - name: erase storm conf
+    command: "rm -rf /etc/storm"
+  - name: erase storm-slider-client conf
+    command: "rm -rf /etc/storm-slider-client"  
+  - name: erase tez conf
+    command: "rm -rf /etc/tez"
+  - name: erase ambari-agent conf
+    command: "rm -rf /etc/ambari-agent"
+  - name: erase ambari-server conf
+    command: "rm -rf /etc/ambari-server"
+  - name: erase kafka conf
+    command: "rm -rf /etc/kafka"
+  - name: erase knox conf
+    command: "rm -rf /etc/knox"
+  - name: erase phoenix conf
+    command: "rm -rf /etc/phoenix"
+  - name: erase sqoop conf
+    command: "rm -rf /etc/sqoop"
+  - name: erase zookeeper conf
+    command: "rm -rf /etc/zookeeper"
+  - name: erase hive-hcator conf
+    command: "rm -rf /etc/hive-hcatalog"
+  - name: erase slider conf
+    command: "rm -rf /etc/slider"
+    
+    # Delete the HDP /var/run directories
+  - name: erase var run Hadoop conf
+    command: "rm -rf /var/run/hadoop"
+  - name: erase var run hbase conf
+    command: "rm -rf /var/run/hbase"     
+  - name: erase var run zookeeper conf
+    command: "rm -rf /var/run/zookeeper"    
+  - name: erase var run flume conf
+    command: "rm -rf /var/run/flume"
+  - name: erase var run webhcat conf
+    command: "rm -rf /var/run/webhcat"
+  - name: erase var run Hadoop-yarn conf
+    command: "rm -rf /var/run/hadoop-yarn"
+  - name: erase var run Hadoop-mapreduce conf
+    command: "rm -rf /var/run/hadoop-mapreduce"
+  - name: erase var run knox conf
+    command: "rm -rf /var/run/knox"
+  - name: erase var run kafka conf
+    command: "rm -rf /var/run/kafka"      
+    
+    # Delete the HDP var log files                   
+  - name: erase var log Hadoop conf
+    command: "rm -rf /var/log/hadoop"    
+  - name: erase var log hbase conf
+    command: "rm -rf /var/log/hbase"    
+  - name: erase var log zookeeper conf
+    command: "rm -rf /var/log/zookeeper"        
+  - name: erase var log flume conf
+    command: "rm -rf /var/log/flume"        
+  - name: erase var log storm conf
+    command: "rm -rf /var/log/storm"
+  - name: erase var log hive conf
+    command: "rm -rf /var/log/hadoop-yarn"          
+  - name: erase var log flume conf
+    command: "rm -rf /var/log/hadoop-mapreduce"               
+  - name: erase var log flume conf
+    command: "rm -rf /var/log/knox"     
+  - name: erase var log flume conf
+    command: "rm -rf /var/log/kafka"         
+
+    # Delete the HD /usr/lib files
+  - name: erase usr lib hadoop conf
+    command: "rm -rf /usr/lib/hadoop"         
+  - name: erase usr lib flume conf
+    command: "rm -rf /usr/lib/flume"
+  - name: erase usr lib storm conf
+    command: "rm -rf /usr/lib/storm"
+  - name: erase usr lib hive conf
+    command: "rm -rf /usr/lib/hive"            
+  - name: erase usr lib oozie conf
+    command: "rm -rf /usr/lib/oozie"
+  - name: erase usr lib hadoop-hdfs conf
+    command: "rm -rf /usr/lib/hadoop-hdfs"
+  - name: erase usr lib knox conf
+    command: "rm -rf /usr/lib/knox"
+    
+    # Delete the tmp files
+  - name: erase tmp ambari-qa
+    command: "rm -rf /tmp/ambari-qa"                
+  - name: erase tmp sqoop-ambari-qa
+    command: "rm -rf /tmp/sqoop-ambari-qa"
+  - name: erase tmp hadoop-hdfs
+    command: "rm -rf /tmp/hadoop-hdfs"
+  - name: erase tmp hadoop hbase
+    command: "rm -rf /hadoop/hbase"            
+  - name: erase hdp current files
+    command: "rm -rf /usr/hdp/2.2.6.0-2800"
+  - name: erase hdp current files
+    command: "rm -rf /usr/hdp"    
+    
+  - name: Reboot all servers
+    command: "reboot now"
+        
+    
+    
+
+    
+    
+    
+                            
