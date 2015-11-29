@@ -152,11 +152,12 @@
   - name: erase ganglia
     file: path=/etc/ganglia state=absent 
   - name: erase HDP repos
-    file: path=/etc/yum.repos.d/HDP.repo
+    file: path=/etc/yum.repos.d/HDP.repo state=absent
   - name: erase HDP-utils repos
-    file: path=/etc/yum.repos.d/HDP-UTILS.repo    
+    file: path=/etc/yum.repos.d/HDP-UTILS.repo state=absent   
   - name: erase ambari repos
-    file: path=/etc/yum.repos.d/ambari.repo
+    file: path=/etc/yum.repos.d/ambari.repo state=absent
+
     # Delete the HDP /var/run directories
   - name: erase var run Hadoop conf
     file: path=/var/run/hadoop state=absent
@@ -250,6 +251,21 @@
     file: path=/usr/jdk64 state=absent
   - name: delete /var/lib/ambari-server
     file: path=/var/lib/ambari-server state=absent
+  - name: remove ambari-server init.d
+    file: path=/etc/ambari-server state=absent
+  - name: remove postgresql init.d
+    file: path=/etc/postgresql state=absent
+    file: path=/etc/rcd/rc3.d/S95ambari-server state=absent
+    file: path=/etc/rcd/rc5.d/S95ambari-server state=absent
+    file: path=/etc/rcd/rc1.d/S95ambari-server state=absent
+    file: path=/etc/rcd/rc2.d/S95ambari-server state=absent
+    file: path=/etc/rcd/rc4.d/S95ambari-server state=absent
+    file: path=/etc/rcd/rc0.d/K20ambari-server state=absent
+    file: path=/etc/rcd/rc1.d/K20ambari-server state=absent
+    file: path=/etc/rcd/rc2.d/K20ambari-server state=absent
+    file: path=/etc/rcd/rc6.d/K20ambari-server state=absent
+  - name: clean slate so time to reboot
+    command: "reboot now"
 
   
     

@@ -63,10 +63,10 @@
     command: "yum repolist"
   - name: Install ambari server
     yum: name=ambari-server 
-  - name: Setup ambari-server with defaults
-    command: "ambari-server setup -s"
-  - name: startup ambari-server
-    command: "ambari-server start"
+#  - name: Setup ambari-server with defaults
+#    command: "ambari-server setup -s"
+#  - name: startup ambari-server
+#    command: "ambari-server start"
       
 
       
