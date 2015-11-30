@@ -1,0 +1,20 @@
+---
+- name: Configure Oracle as the metastore for Ambari-Server
+  hosts: ambari
+  serial: 10
+  remote_user: root
+  vars:
+    AmbariUser: "john"
+    AmbariPassword: "hadoop"
+    OracleAdmin: "SYSTEM"
+    OraclePassword: "Hadoop"
+    AmbariSchemaScript: "createAmbariUser.sql"
+  tasks:
+  - name: Copy the .jar file to the Java share directory
+    copy: remote_src=TRUE src=/u01/app/oracle/product/11.2.0/xe/jdbc/lib/ojdbc6.jar dest=/usr/share/java mode=0644
+  - name: create the Ambari - Oracle ambari user creation script via template
+    template: dest={{ AmbariSchemaScript }} 
+  - name: run the user creation script
+    command: "SQLPLUS {{ OracleAdmin }}/{{ OraclePassword }} < {{ AmbariSchemaScript }}"
+
+    

@@ -4,49 +4,32 @@
   serial: 10
   remote_user: root
   tasks:
-  - name: ensure wget is at the latest version
-    yum: name=wget state=latest
-  - name: ensure unzip is at the latest version
-    yum: name=unzip state=latest
-#  - name: ensure mysql is at the latest version
-#    yum: name=mysql state=latest
-  - name: ensure yum-utils is at the latest version
-    yum: name=yum-utils state=latest
-  - name: ensure createrepo is at the latest version
-    yum: name=createrepo state=latest
-  - name: ensure  yum-plugin-priorities is at the latest version
-    yum: name=yum-plugin-priorities state=latest
-  - name: ensure git is at the latest version
-    yum: name=git state=latest
-  - name: ensure ntp is at the latest version
-    yum: name=ntp state=latest 
-  - name: ensure ntpdate is at the latest version
-    yum: name=ntpdate state=latest 
-  - name: ensure ntp-doc is at the latest version
-    yum: name=ntp-doc state=latest 
-  - name: ensure linselinux-python is at the latest version
-    yum: name=libselinux-python state=latest    
+  - name: Add HDP Ambari assumed components
+    yum: name={{item.name}} state=latest
+    with_items:
+    - { name: 'wget'}
+    - { name: 'unzip'}
+    - { name: 'yum-utils'}
+    - { name: 'createrepo'}
+    - { name: 'yum-plugin-priorities'}
+    - { name: 'git'}
+    - { name: 'ntp'} 
+    - { name: 'ntpdate'} 
+    - { name: 'ntp-doc'} 
+    - { name: 'libselinux-python'}    
 
   - name: Stop iptables
-    command: "/etc/init.d/iptables stop"
-    
-  - name: disable iptables
-    command: "chkconfig iptables off"
-    
-  - name: Retrieve memory from each of the servers
-    command: "free -m"
-
-  - selinux: state=disabled
+    service: name=iptables state=stopped enabled=no
+  - name: Disable selinux
+    selinux: state=disabled 
   - name: Ensure that NTP is up and running
     service: name=ntpd state=started enabled=yes
-    
   - name: Ensure that NTP is up and running
     service: name=ntpd state=started enabled=yes
   - name: write the standard server host file
     template:
       src: hosts.j2
       dest: /etc/hosts
-      
   - name: Turn off transparent huge pages
     command: "echo 'never' > /sys/kernel/mm/transparent_hugepage/enabled"
       
@@ -65,6 +48,8 @@
     yum: name=ambari-server 
 #  - name: Setup ambari-server with defaults
 #    command: "ambari-server setup -s"
+  - name: Install Ambari Server with Oracle defaults
+    command: "ambari-server setup --jdbc-db=oracle --jdbc-driver=/usr/share/java/ojdbc6.jar"
 #  - name: startup ambari-server
 #    command: "ambari-server start"
       
