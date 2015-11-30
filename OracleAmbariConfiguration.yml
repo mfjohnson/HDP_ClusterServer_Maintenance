@@ -1,33 +1,44 @@
 ---
 - name: Configure Oracle as the metastore for Ambari-Server
-  hosts: ambari
+  hosts: oracle
   serial: 10
   remote_user: root
+  environment:
+    ORACLE_HOME: /u01/app/oracle/product/11.2.0/xe
+    ORACLE_SID: XE
+    NLS_LANG: AMERICAN_AMERICA.AL32UTF8
+    PATH: "{{ORACLE_HOME}}/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin"
   vars:
     AmbariUser: admin
     AmbariPassword: admin
     OracleAdmin: SYSTEM
-    OraclePassword: Hadoop
+    OraclePassword: hadoop
     HIVEUSER: hive
     HIVEPASSWORD: hive
     OOZIEUSER: oozie
     OOZIEPASSWORD: oozie
-    AmbariSchemaScript: ~/createAmbariUser.sql
-    OozieSchemaScript: ~/createOozieUser.sql
+    AmbariOracleSystemUserScript: "/root/createAmbariUser.sql"
+    OozieSchemaScript: "/root/createOozieUser.sql"
+    HiveSchemaScript: "/root/createHiveUser.sql"
+    OracleAmbariCreateScript: "/root/OracleAmbariCreate.sh"
   tasks:
-#  - name: Copy the .jar file to the Java share directory
+  - debug: var="{{ ORACLE_HOME }}"
+  - name: Copy the .jar file to the Java share directory
+    command: "cp /u01/app/oracle/product/11.2.0/xe/jdbc/lib/ojdbc6.jar /usr/share/java"
 #    copy: src=/u01/app/oracle/product/11.2.0/xe/jdbc/lib/ojdbc6.jar dest=/usr/share/java mode=0644
   - name: create the Ambari - Oracle ambari user creation script via template
-    template: src=defineOracleUser.j2 dest={{ AmbariSchemaScript }} 
-  - name: run the Ambari user creation script
-    command: "sqlplus {{ OracleAdmin }}/{{ OraclePassword }} < {{ AmbariSchemaScript }}"
+    template: src=defineOracleUser.j2 dest=/root/createAmbariUser.sql 
   - name: Define the Hive user with Oracle
     template: src=defineHiveOracleUser.j2 dest={{ HiveSchemaScript }} 
   - name: Define the Oozie user with Oracle
     template: src=DefineOozieOracleUser.j2 dest={{ OozieSchemaScript }} 
-  - name: Erase prior Ambari /var/log files
-    file: path=/var/log/ambari-server state=absent
-  - name: Perform Ambari Oracle Setup
-    command: "ambari-server setup --jdbc-db=oracle --jdbc-driver=/usr/share/java/ojdbc6.jar"
+
+  - name: Create the Oracle Ambari Schemas script
+    template: src=OracleAmbariCreate.j2 dest={{OracleAmbariCreateScript}}
+  - name: Execute the Oracle Ambari schema script and run Oracle Ambari-server setup
+    command: "sh /root/OracleAmbariCreate.sh"
+    ignore_errors: True
+    async: 60
+    poll: 60
 
     

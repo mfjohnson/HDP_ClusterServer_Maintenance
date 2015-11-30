@@ -28,6 +28,7 @@
     - { name: 'hbase'}
     - { name: 'zookeeper'}
     - { name: 'oozie'}
+    - { name: 'oozie-client'}
     - { name: 'pig'}
     - { name: 'knox'}
     - { name: 'snappy'}
@@ -210,7 +211,7 @@
     - { name: 'sqoop' }
 
   - name: clean slate so time to reboot
-    command: "reboot now"
+    command: "/sbin/reboot"
 
   
     

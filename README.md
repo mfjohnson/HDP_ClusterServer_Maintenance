@@ -6,7 +6,7 @@ The project scripts enable both a server provisioning in preparation of a HDP in
    - Ansible is installed
    - All target cluster servers are imaged with the OS
 ## How to steps:
-   - modify the ansible 'hosts' file and install in your host direct /etc/ansible directory.  See the example 'hosts' directory in this repository.
+   - modify the ansible 'hosts' file and install in your host direct /usr/local/etc/ansible directory.  See the example 'hosts' directory in this repository.
 
 # Configure password less SSH
 For Ambari it is necessary to have password less access from the Ambari server to each of the cluster member nodes.  It is also handy to have your laptop/host also with password-less.  Executing the following shell script will setup this functionality.
@@ -16,6 +16,7 @@ For Ambari it is necessary to have password less access from the Ambari server t
    - Server(s) are imaged with a linux OS
    - Ansible is installed and the user has a basic understanding of this fine tool.
    - Establish password-less SSH
+   - If the server is not a fresh instance, it is a good idea to first tear down the HDP installation using the uninstallHDP.yml playbook.
    
 ## How to steps
    - Define Ansible 'hosts' file for all of your servers.  Specify one of the servers as belonging to the 'ambari' group.  This server will be the location of the Ambari-server instance.  All servers shoudl go to the all group.
@@ -36,3 +37,16 @@ Note:  This script does not attempt backup metadata.
 ## How to steps:
    - leverage existing Ansible 'hosts' file used in the above step.  Specify one of the servers as belonging to the 'ambari' group.  This server will be the location of the Ambari-server instance.  All servers shoudl go to the all group.
    - Execute the command 'ansible-playbook uninstallHDP.yml'.  This playbook will assure that all the components setup as part of the provision are 'absent' from all the cluster nodes.
+
+# Configure Oracle for Ambari, Hive and Oozie Metastore Usage
+For enterprise HDP users with deep skills in Oracle and who do not want to use the standard HDP metstore definitions
+## Playbook name: OracleAmbariConfiguration.yml
+## Pre-conditions
+   - An instance of Oracle is already installed and running when the playbook is run.
+   - The provisionHDP.yml playbook has already run successfully and that ambari-server setup has not yet been run.  Make certain to verify that the provisionHDP.yml playbook has the ambari-server setup play commented out.
+   - A 'oracle' Ansible Host is defined with a single server definition
+   - password less ssh is defined for the oracle user
+
+## How to steps:
+   - Confirm the vars within the playbook are as desired
+   - run the playbook: 'ansible-playbook OracleAmbariConfiguration.yml'

@@ -33,11 +33,12 @@
   remote_user: root
   tasks:
   - name: Upgrade Ambari server"
-    command: "yum -y upgrade ambari-server ambari-log4j > ambari-server-upgrade.log"   
-  - name: Start ambari-server
-    command: "ambari-server start > ambari-server-start.log"   
+    command: "yum -y upgrade ambari-server ambari-log4j > ambari-server-upgrade.log"  
   - name: Upgrade ambari server
-    command: "ambari-server upgrade" 
+    command: "ambari-server upgrade"  
+  - name: Start ambari-server
+    command: "ambari-server start"   
+
    
 # Prepare all host nodes stopping at step 15 of the docs
 - name: Start all of the ambari agents

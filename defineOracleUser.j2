@@ -1,4 +1,5 @@
 
+DROP USER {{AmbariUser}} CASCADE;
 CREATE USER {{ AmbariUser }} IDENTIFIED BY {{ AmbariPassword }} default tablespace "USERS" temporary tablespace "TEMP";
 GRANT unlimited tablespace to {{ AmbariUser }};
 GRANT create session to {{ AmbariUser }};

@@ -34,7 +34,7 @@
     command: "echo 'never' > /sys/kernel/mm/transparent_hugepage/enabled"
       
       
-- hosts: ambari
+- hosts: oracle
   remote_user: root
   vars:
     hdpRepo: http://public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/1.6.1/ambari.repo
@@ -46,10 +46,10 @@
     command: "yum repolist"
   - name: Install ambari server
     yum: name=ambari-server 
+    
 #  - name: Setup ambari-server with defaults
 #    command: "ambari-server setup -s"
-  - name: Install Ambari Server with Oracle defaults
-    command: "ambari-server setup --jdbc-db=oracle --jdbc-driver=/usr/share/java/ojdbc6.jar"
+
 #  - name: startup ambari-server
 #    command: "ambari-server start"
       
