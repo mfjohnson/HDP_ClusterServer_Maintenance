@@ -50,3 +50,37 @@ For enterprise HDP users with deep skills in Oracle and who do not want to use t
 ## How to steps:
    - Confirm the vars within the playbook are as desired
    - run the playbook: 'ansible-playbook OracleAmbariConfiguration.yml'
+
+
+---- In progress source notes
+- [ ] ansible-playbook uninstallHDP.yml
+- [ ] reboot all servers ( ansible all -a "/sbin/reboot" -f 10 -u root)
+- [x] ansible-playbook provisionHDP.yml
+- [ ] Make certain the Oracle SYSTEM user, hive user, admin and oozie users exists from server1
+- [ ] sqlplus admin/admin @/var/lib/ambari-server/resources/Ambari-DDL-Oracle-DROP.sql
+- [ ] ‘ambari-server setup’ and then enter parameters…do not use silent mode
+    - use all defaults until advanced database
+        - Option #2 - Oracle
+        - hostname: server1.hdp
+        - port:1521
+        - Identifier type - (2- SID) - XE
+        - username: admin
+        - password: admin
+        - Not CREATE message (next step) and agree to finish configuring remote database connection
+        - Double check etc/ambari-server/conf/ambari.properties to config jdbc properties are correctly set.
+- [x] sqlplus admin/admin @/var/lib/ambari-server/resources/Ambari-DDL-Oracle-CREATE.sql
+    - Note: a bunch of the qrtz tables will be reported as not existing
+- [ ] ambari-server start.  Verify ambari-server reported as ‘start’ completed successfully"
+- [ ] Setup cluster using Ambari (server1:8080) workflow and use initial defaults.  Setup the following users
+    - SID=XE
+    - Hive user: hive/hive
+    - host=server1.hdp
+
+Upgrade from the 1.6.1 Oracle to 2.0.2:
+
+- turn off all occurrences of ambari-server and ambari-agent
+    - ansible all -a "ambari-server stop" -f 10 -u root
+    - ansible all -a "ambari-agent stop" -f 10 -u root
+    - reboot servers
+- Retrieve ambari.repo: wget -nv http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.0.2/ambari.repo -O /etc/yum.repos.d/ambari.repo
+- yum clean all
