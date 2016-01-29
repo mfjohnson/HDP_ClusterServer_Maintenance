@@ -5,8 +5,8 @@
   remote_user: root
   tasks:
   - debug: var=ansible_eth0
-  - name: Erase all of the /var/log HDP related files
-    yum: name={{item.name}} state=latest
+  - name: Install components necessary for Oracle 11g Express
+    yum: name={{ item.name }} state=latest
     with_items:
     - { name: 'wget'}
     - { name: 'glibc'}
@@ -17,11 +17,11 @@
     - { name: 'bc'}
     - { name: 'flex'}
     - { name: 'unixODBC'}
-   - name: Set Kernel Parameters for Centos to properly run Oracle express
-     syssctl: name={{item.name}} value={{item.value}}
-     with_items:
-     - {name: 'kernel.sem', value:'250 32000 100 128'}
-     - {name: 'fs.file-max', value:'6815744'}
+  - name: Set kernel parameters
+    sysctl: name={{ item.name }} value={{ item.value }}
+    with_items:
+     - {name: 'kernel.sem', value: '250 32000 100 128' }
+     - {name: 'fs.file-max', value: '6815744' }
 
 
 
@@ -34,7 +34,7 @@
     oracleExpressResponse: OracleExpress.rsp
   tasks:
   - name: Copy the Oracle Express from the disk image directory
-    unarchive: copy=yes src=disk_images/{{ oracleExpress }}.zip dest=/
+    unarchive: copy=yes src=disk_images/{{ oracleExpress }}.rpm.zip dest=/
   - name: Prepare response file template
     template: src={{ oracleExpressResponse }} dest=/
   - name: make certain we are starting out fresh

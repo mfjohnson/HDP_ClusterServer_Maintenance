@@ -3,20 +3,25 @@
 - hosts: all
   serial: 10
   remote_user: root
+  vars:
+#    ambariRepo: http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.0.2/ambari.repo
+     ambariRepo: http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.1.2.1
+#    ambariRepo: http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.0.1/ambari.repo
+#    yumrepo: name=ambari baseurl={{ ambariRepo }} state=present  enabled=yes gpgcheck=yes gpgcakey=http://public-repo-1.hortonworks.com/HDP/centos6/2.x/updates/2.2.6.0/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
   tasks:
-  - name: Add HDP Ambari assumed components
-    yum: name={{item.name}} state=latest
-    with_items:
-    - { name: 'wget'}
-    - { name: 'unzip'}
-    - { name: 'yum-utils'}
-    - { name: 'createrepo'}
-    - { name: 'yum-plugin-priorities'}
-    - { name: 'git'}
-    - { name: 'ntp'} 
-    - { name: 'ntpdate'} 
-    - { name: 'ntp-doc'} 
-    - { name: 'libselinux-python'}    
+  - name: Set the Ambari repo 
+    shell: "wget -nv {{ ambariRepo }}/ambari.repo -O /etc/yum.repos.d/ambari.repo"
+    register: ambariRepositoryInstalled
+
+  - stat: path=/etc/yum.repos.d/ambari.repo
+    register: st
+
+  - fail: msg="ambari.repo not present in /etc/yum.repos.d"
+    when: st.stat.exists == False
+
+  - name: Install the Ambari agent
+    yum: name=ambari-agent state=present
+    when: ambariRepositoryInstalled|success
 
   - name: Stop iptables
     service: name=iptables state=stopped enabled=no
@@ -31,36 +36,23 @@
       src: hosts.j2
       dest: /etc/hosts
   - name: Turn off transparent huge pages
-    command: "echo 'never' > /sys/kernel/mm/transparent_hugepage/enabled"
+    shell: "echo 'never' > /sys/kernel/mm/transparent_hugepage/enabled"
+
       
-      
-- hosts: oracle
-  remote_user: root
-  vars:
-    hdpRepo: http://public-repo-1.hortonworks.com/ambari/centos6/1.x/updates/1.6.1/ambari.repo
-#    hdpRepo: http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.0.1/ambari.repo
-  tasks:
-  - name: Setup up Ambari repository
-    command: "wget -nv {{ hdpRepo }} -O /etc/yum.repos.d/ambari.repo"
-  - name: Verify YUM repolist
-    command: "yum repolist"
+- hosts: ambari
+  remote_user: root 
+  tasks: 
+#  - name: Verify YUM repolist
+#    command: "yum repolist"
+   
   - name: Install ambari server
     yum: name=ambari-server 
+
+
+
     
 #  - name: Setup ambari-server with defaults
-#    command: "ambari-server setup -s"
-
+#    shell: "ambari-server setup -s"
+#
 #  - name: startup ambari-server
-#    command: "ambari-server start"
-      
-
-      
-
-
-      
-    
-        
-        
-        
-
-
+#    shell: "sleep 10 && ambari-server start"

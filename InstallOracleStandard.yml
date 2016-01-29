@@ -1,0 +1,74 @@
+---
+- name: Confirm Oracle Standard Pre-requisites ready
+  hosts: ambari
+  serial: 10
+  remote_user: root
+  tasks:
+  - name: Set repository required for Oracle Standard
+    yumrepo: name=xxx baseurl=https://public-yum.oracle.com/public-yum-ol6.repo
+    with_items:
+    - { name: 'wget'}
+    - { name: 'glibc'}
+    - { name: 'make'}
+    - { name: 'binutils'}
+    - { name: 'libaio'}
+    - { name: 'libselinux-python'}
+    - { name: 'bc'}
+    - { name: 'flex'}
+    - { name: 'unixODBC'}
+    - { name: 'libstdc++'}
+    - { name: 'elfutils-devel'}
+    - { name: 'elfutils-libelf-devel'}
+    - { name: 'gcc-c++'}
+    - { name: 'glibc'}
+    - { name: 'glibc-devel'}
+    - { name: 'libaio-devel'}
+    - { name: 'libaio'}
+    - { name: 'libgcc'}
+    - { name: 'libstdc++-devel'}
+    - { name: 'libtool-ltdl'}
+    - { name: 'nss-softokn-freebl'}
+    - { name: 'readline'}
+    - { name: 'ncurses-libs'}
+    - { name: 'libcap'}
+    - { name: 'libattr'}
+    - { name: 'libcap1'}
+## added for Oracle 11.2.0.3
+#kernel.shmall = 2097152
+#kernel.shmmax = 1050470400
+#kernel.shmmni = 4096
+#kernel.sem = 250 32000 100 128
+#fs.file-max = 6815744
+#fs.aio-max-nr = 1048576
+#net.ipv4.ip_local_port_range = 9000 65500
+#net.core.rmem_default = 262144
+#net.core.rmem_max = 4194304
+#net.core.wmem_default = 262144
+#net.core.wmem_max = 1048576
+  - name: Set kernel parameters
+    sysctl: name={{ item.name }} value={{ item.value }}
+    with_items:
+     - {name: 'kernel.sem', value: '250 32000 100 128' }
+     - {name: 'fs.file-max', value: '6815744' }
+
+  - name: Create The oracle account groups
+    group: name={{ item.group }} state=present
+    with_items:
+    - { group: 'dba' }
+    - { group: 'oinstall' }
+    - { group: 'asmdba' }
+    - { group: 'asmadmin'}
+  - name: Add Oracle Account
+    user: name=oracle generate_ssh_key=yes ssh_key_bits=2048 ssh_key_file=.ssh/id_rsa group=dba groups=dba,oinstall,asmdba,asmadmin home=/home/oracle password=oracle state=present
+  - name: Create Oracle Standard application directory
+    file: path=/u01/app state=directory mode=0755 group=dba owner=oracle
+  - name: Update the oracle user bash_profile template
+    template: src=bash_profile-ora.j2 dest=/home/oracle/.bash_profile owner=oracle
+
+  - name: Unzip oracle database disks (1 ) into ~/database directory
+    unarchive: src=/disk_images/linux.x64_11gR2_database_1of2.zip dest=/~/provisionCluster/disk_images copy=no
+  - name: Unzip oracle database disks (2) into ~/database directory
+    unarchive: src=/disk_images/linux.x64_11gR2_database_2of2.zip dest=/~/provisionCluster/disk_images copy=no
+
+#  - name: Update the Oracle installer response file
+#  - name: Run the Oracle Installer

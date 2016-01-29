@@ -1,0 +1,7 @@
+#!/bin/bash
+/u01/app/oracle/product/11.2.0/xe/bin/sqlplus {{ OracleAdmin }}/{{ OraclePassword }}  @{{ AmbariOracleSystemUserScript }}
+/u01/app/oracle/product/11.2.0/xe/bin/sqlplus {{ OracleAdmin }}/{{ OraclePassword }} < {{ HiveSchemaScript }}
+/u01/app/oracle/product/11.2.0/xe/bin/sqlplus {{ OracleAdmin }}/{{ OraclePassword }} < {{ OozieSchemaScript }}
+/u01/app/oracle/product/11.2.0/xe/bin/sqlplus admin/admin @/var/lib/ambari-server/resources/Ambari-DDL-Oracle-DROP.sql > OracleDrop.log
+ambari-server setup --jdbc-db=oracle --jdbc-driver=/usr/share/java/ojdbc6.jar > OracleAmbariSetup.log
+/u01/app/oracle/product/11.2.0/xe/bin/sqlplus admin/admin @/var/lib/ambari-server/resources/Ambari-DDL-Oracle-CREATE.sql > OracleCreate.log

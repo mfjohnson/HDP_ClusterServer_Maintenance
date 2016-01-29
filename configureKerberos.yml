@@ -1,0 +1,40 @@
+# Kerberos Centos Installation
+#
+
+---
+- name: Install and Configure Kerberos for use with HDP
+  hosts: ambari
+  serial: 10
+  remote_user: root
+  vars:
+    kerberosServer: 'server1.hdp'
+    kerberosREALM: 'SERVER1.HDP'
+  tasks:
+  - name: Install the Kerberos Required Components
+    yum: name={{item.name}} state=latest
+    with_items:
+    - { name: 'krb5-server'}
+    - { name: 'krb5-libs'}
+    - { name: 'krb5-workstation'}
+  - name: Configure krb5.conf for deployed host
+    template: src="krb5.conf.j2" dest=/etc/krb5.conf
+#`````notify: restart nginx
+  - name: Create the Kerberos Database
+    command: 'kdb5_util create -s'
+  - name: Start the KDC
+    command: '/etc/rc.d/init.d/krb5kdc start'
+  - name: Start the Kerberos Admin
+    command: 'systemctl start kadmin'
+  - name: Enable KDC server for auto boot
+    command: 'chkconfig krb5kdc on'
+  - name: Enable KDC Admin for auto boot
+    command: 'chkconfig kadmin on'
+  - name: Create KDC admin principal
+    command: 'kadmin.local -q "addprinc admin/admin"'
+## confirm principal with vi /var/kerberos/krb5kdc/kadm5.acl
+
+
+
+
+
+
