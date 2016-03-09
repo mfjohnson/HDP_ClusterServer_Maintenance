@@ -1,0 +1,14 @@
+{
+  "blueprint" : "default-blueprint23",
+  "default_password" : "admin",
+  "host_groups" :[
+    {
+      "name" : "master_group",
+      "hosts" : [{"fqdn" : "server1.hdp"}]
+    },
+    {
+      "name" : "slave_group",
+      "host_count" : 4
+    }
+  ]
+}

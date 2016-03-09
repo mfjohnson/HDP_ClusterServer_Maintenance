@@ -1,0 +1,27 @@
+{
+  "blueprint": "hdfs_ha_blueprint22",
+  "default_password": "admin",
+  "host_groups": [
+    { "hosts": [
+        { "fqdn": "server1.hdp" }
+      ], "name": "gateway"
+    },
+    { "hosts": [
+        { "fqdn": "server2.hdp" }
+      ], "name": "master_1"
+    },
+    { "hosts": [
+        { "fqdn": "server3.hdp" }
+      ], "name": "master_2"
+    },
+    { "hosts": [
+        { "fqdn": "server4.hdp" }
+      ], "name": "master_3"
+    },
+    { "hosts": [
+        { "fqdn": "server5.hdp" }
+      ],
+      "name": "slave_1"    
+    }
+  ]
+}

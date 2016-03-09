@@ -1,0 +1,87 @@
+{
+  "configurations" : [
+    { 
+      "hive-env" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "webhcat_user" : "hcat",
+          "hive_txn_acid" : "on"
+        }
+      }
+    },
+    {
+      "hive-site" : {
+        "properties_attributes" : { },
+        "properties" : {
+           "hive.compactor.worker.timeout" : "86400L",
+          "hive.compactor.check.interval" : "300L",
+          "hive.compactor.abortedtxn.threshold" : "1000",
+          "hive.compactor.delta.pct.threshold" : "0.1f",
+          "hive.compactor.delta.num.threshold" : "10",
+          "hive.compactor.initiator.on" : "true",
+          "hive.compactor.worker.threads" : "1",
+          "hive.support.concurrency" : "true",
+          "hive.txn.timeout" : "300",
+          "hive.timedout.txn.reaper.interval" : "180",
+          "hive.txn.max.open.batch" : "1000",
+          "hive.compactor.worker.timeout" : "86400",
+          "hive.exec.dynamic.partition.mode" : "nonstrict",
+          "hive.compactor.cleaner.run.interval" : "5000",
+          "hive.compactor.abortedtxn.threshold" : "1000",
+          "hive.compactor.max.num.delta" : "500",
+          "Transaction_Manager": "org.apache.hadoop.hive.ql.lockmgr.DbTxnManager" 
+        }
+      }
+    }
+   ],
+  "host_groups" : [
+    {
+      "components" : [
+        { "name" : "YARN_CLIENT" },
+        { "name" : "HDFS_CLIENT" },
+        { "name" : "HIVE_SERVER" },
+        { "name" : "SQOOP"       },
+        { "name" : "MYSQL_SERVER"  },
+        { "name" : "HISTORYSERVER" },
+        { "name" : "METRICS_MONITOR" },
+        { "name" : "HIVE_METASTORE"  },
+        { "name" : "NAMENODE"        },
+        { "name" : "TEZ_CLIENT"      },
+        { "name" : "ZOOKEEPER_CLIENT" },
+        { "name" : "HCAT"       },
+        { "name" : "PIG"        },
+        { "name" : "WEBHCAT_SERVER"      },
+        { "name" : "SECONDARY_NAMENODE"  },
+        { "name" : "MAPREDUCE2_CLIENT"   },
+        { "name" : "ZOOKEEPER_SERVER"    },
+        {"name" :  "JOURNALNODE"},
+        {"name" :  "HCAT"},
+        { "name" : "OOZIE_CLIENT"        },
+        { "name" : "AMBARI_SERVER"       },
+        { "name" : "OOZIE_SERVER"        },
+        { "name" : "APP_TIMELINE_SERVER" },
+        { "name" : "HIVE_CLIENT"         },
+        { "name" : "METRICS_COLLECTOR"   },
+        { "name" : "RESOURCEMANAGER"     }
+      ],
+      "configurations" : [ ],
+      "name" : "master_group",
+      "cardinality" : "1"
+    },
+    {
+      "components" : [
+        { "name" : "NODEMANAGER"      },
+        { "name" : "ZOOKEEPER_SERVER" },
+        { "name" : "DATANODE"         },
+        { "name" : "METRICS_MONITOR"  }
+      ],
+      "configurations" : [ ],
+      "name" : "slave_group",
+      "cardinality" : "2"
+    }
+  ],
+  "Blueprints" : {
+    "stack_name" : "HDP",
+    "stack_version" : "2.3"
+  }
+}

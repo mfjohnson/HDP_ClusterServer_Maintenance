@@ -1,0 +1,79 @@
+{
+  "configurations" : [
+    { 
+      "hive-env" : {
+        "properties_attributes" : { },
+        "properties" : {
+          "webhcat_user" : "hcat",
+          "hive_txn_acid" : "on"
+        }
+      }
+    },
+    {
+      "hive-site" : {
+        "properties_attributes" : { },
+        "properties" : {
+           "hive.compactor.worker.timeout" : "86400L",
+          "hive.compactor.check.interval" : "300L",
+          "hive.compactor.abortedtxn.threshold" : "1000",
+          "hive.compactor.delta.pct.threshold" : "0.1f",
+          "hive.compactor.delta.num.threshold" : "10",
+          "hive.compactor.initiator.on" : "false",
+          "hive.compactor.worker.threads" : "0",
+          "hive.support.concurrency" : "true",
+          "Transaction_Manager": "org.apache.hadoop.hive.ql.lockmgr.DbTxnManager" 
+        }
+      }
+    }
+   ],
+  "host_groups" : [
+    {
+      "components" : [
+        { "name" : "YARN_CLIENT" },
+        { "name" : "HDFS_CLIENT" },
+        { "name" : "HIVE_SERVER" },
+        { "name" : "SQOOP"       },
+        { "name" : "MYSQL_SERVER"  },
+        { "name" : "HISTORYSERVER" },
+        { "name" : "METRICS_MONITOR" },
+        { "name" : "HIVE_METASTORE"  },
+        { "name" : "NAMENODE"        },
+        { "name" : "TEZ_CLIENT"      },
+        { "name" : "ZOOKEEPER_CLIENT" },
+        { "name" : "HCAT"       },
+        { "name" : "PIG"        },
+        { "name" : "WEBHCAT_SERVER"      },
+        { "name" : "SECONDARY_NAMENODE"  },
+        { "name" : "MAPREDUCE2_CLIENT"   },
+        { "name" : "ZOOKEEPER_SERVER"    },
+        {"name" :  "ZKFC"},
+        {"name" :  "JOURNALNODE"},
+        {"name" :  "HCAT"},
+        { "name" : "OOZIE_CLIENT"        },
+        { "name" : "AMBARI_SERVER"       },
+        { "name" : "OOZIE_SERVER"        },
+        { "name" : "HIVE_CLIENT"         },
+        { "name" : "METRICS_COLLECTOR"   },
+        { "name" : "RESOURCEMANAGER"     }
+      ],
+      "configurations" : [ ],
+      "name" : "master_group",
+      "cardinality" : "1"
+    },
+    {
+      "components" : [
+        { "name" : "NODEMANAGER"      },
+        { "name" : "ZOOKEEPER_SERVER" },
+        { "name" : "DATANODE"         },
+        { "name" : "METRICS_MONITOR"  }
+      ],
+      "configurations" : [ ],
+      "name" : "slave_group",
+      "cardinality" : "2"
+    }
+  ],
+  "Blueprints" : {
+    "stack_name" : "HDP",
+    "stack_version" : "2.3"
+  }
+}
