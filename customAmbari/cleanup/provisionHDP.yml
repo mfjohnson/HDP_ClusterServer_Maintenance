@@ -1,0 +1,106 @@
+    # password created with: python -c 'import crypt; print crypt.crypt("This is my Password", "$1$SomeSalt$")'
+---
+- hosts: all
+  serial: 10
+  remote_user: root
+  vars:
+     hostRoot: 192.168.1
+     ambariServer: server1.hdp
+     ambariRepo: http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.2.0.0
+  tasks:
+  - name: Set the Ambari repo 
+    get_url: url={{ ambariRepo}}/ambari.repo dest=/etc/yum.repos.d/ambari.repo force=yes
+    register: ambariRepositoryInstalled
+
+  - stat: path=/etc/yum.repos.d/ambari.repo
+    register: st
+
+  - fail: msg="ambari.repo not present in /etc/yum.repos.d"
+    when: st.stat.exists == False
+  - name: Add HDP Ambari assumed components
+    yum: name={{item.name}} state=latest
+    with_items:
+    - { name: 'wget'}
+    - { name: 'libpcap'}
+    - { name: 'libpcap-devel'}
+    - { name: 'ncurses'}
+    - { name: 'ncurses-devel'}
+    - { name: 'epel-release'}
+    - { name: 'unzip'}
+    - { name: 'yum-utils'}
+    - { name: 'createrepo'}
+    - { name: 'yum-plugin-priorities'}
+    - { name: 'git'}
+    - { name: 'ntp'} 
+    - { name: 'ntpdate'} 
+    - { name: 'ntp-doc'} 
+    - { name: 'tcpdump' }
+    - { name: 'nmap' }
+    - { name: 'iftop' }
+    - { name: 'sysstat' }
+    - { name: 'libselinux-python'} 
+  - name: Install the Ambari agent
+    yum: name=ambari-agent state=present
+    when: ambariRepositoryInstalled|success
+
+  - name: Stop iptables
+    service: name=iptables state=stopped enabled=no
+  - name: Disable selinux
+    selinux: state=disabled 
+  - name: Ensure that NTP is up and running
+    service: name=ntpd state=started enabled=yes
+  - name: Ensure that NTP is up and running
+    service: name=ntpd state=started enabled=yes
+  - name: write the standard server host file
+    template:
+      src: hosts.j2
+      dest: /etc/hosts
+  - name: Turn off transparent huge pages
+    shell: "echo 'never' > /sys/kernel/mm/transparent_hugepage/enabled"
+  - name: deploy MySQL jar files
+    copy: src=disk_images/mysql-connector-java-5.1.38-bin.jar dest=/usr/share/java
+  - name: Update ambari-agent hostname to be the ambari-server
+    replace: dest=/etc/ambari-agent/conf/ambari-agent.ini regexp="hostname\=localhost" replace="hostname={{ambariServer}}"
+  - name: Start Ambari Agents"
+    command: "ambari-agent start"
+
+      
+- hosts: ambari
+  remote_user: root 
+  vars:
+     HDPversion: 2.2
+  tasks: 
+#  - name: Verify YUM repolist
+#    command: "yum repolist"
+   
+  - name: Install ambari server
+    yum: name=ambari-server 
+    
+  - name: Setup ambari-server with defaults
+    shell: "ambari-server setup -s -v"
+
+
+#  - name: sleed while waiting for Ambari server setup
+#    shell: "sleep 200"
+#  - name: Start Ambari server 
+#    shell: ambari-server start
+      
+#- hosts: all
+#  remote_user: root 
+#  vars:
+#     ambariHostname: server1.hdp
+#  tasks: 
+#  - name: Update ambari-agent.ini hostname Update
+#    replace: dest=/etc/ambari-agent/conf/ambari-agent.ini regexp="hostname\=localhost" replace="hostname={{ambariHostname}}"
+#  - name: Start ambari agent
+#    shell: ambari-agent start
+
+#- hosts: ambari
+#  remote_user: root 
+#  name: Build the actural HDP cluster
+#  tasks: 
+#  - name: Run the cluster build script
+#    shell: "./buildCluster.sh"
+
+
+

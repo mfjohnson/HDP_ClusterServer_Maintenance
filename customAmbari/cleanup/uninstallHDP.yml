@@ -1,0 +1,490 @@
+---
+- remote_user: root 
+  hosts: all
+  name: Remove HDP installed packages
+  serial: 10
+  vars:
+    # password created with: python -c 'import crypt; print crypt.crypt(This is my Password, $1$SomeSalt$)'
+  tasks:
+# TODO: Add a method to stop all of the services first
+  - name: stop ambari-agents
+    command: "ambari-agent stop"
+    ignore_errors: True
+  - name: stop ambari server
+    command: "ambari-server stop"
+    ignore_errors: True
+  - name: Wait for Ambari to finish stopping
+    command: "sleep 20"
+  - name: remove alternatives
+    command: "alternatives --remove storm-conf /etc/storm-conf/conf.dist"
+    ignore_errors: True
+  - name: YUM remove items from list
+    yum: name={{item.name}} state=absent
+    with_items:
+    - { name: 'libconfuse' }
+    - { name: 'rrdtool' }
+    - { name: 'nagios-devel' }
+    - { name: 'nagios-www' }
+    - { name: 'nagios' }
+    - { name: 'webhcat-tar-pig' }
+    - { name: 'webhcat-tar-hive' }
+    - { name: 'hcatalog'}    
+    - { name: 'hive'}
+    - { name: 'hive-hcatalog'}
+    - { name: 'phoenix'}
+    - { name: 'hbase*'}
+    - { name: 'zookeeper*'}
+    - { name: 'oozie*'}
+    - { name: 'pig'}
+    - { name: 'knox'}
+    - { name: 'snappy'}
+    - { name: 'storm*'}
+    - { name: 'kafka*'}
+    - { name: 'ranger*'}
+    - { name: 'flume'}
+    - { name: 'sqoop'}
+    - { name: 'hadoop-lzo'}
+    - { name: 'hadoop*' }
+    - { name: 'falcon*'}
+    - { name: 'accumulo'}              
+    - { name: 'hadoop'}
+    - { name: 'mysql-connector'}
+    - { name: 'mysql-libs'}
+    - { name: 'mysql'}
+    - { name: 'mysql-server'}
+    - { name: 'slider*'}
+    - { name: 'postgresql'}
+    - { name: 'postgresql-contrib'}
+    - { name: 'postgresql-devel'}
+    - { name: 'postgresql-docs'}
+    - { name: 'postgresql-jdbc'}
+    - { name: 'postgresql-libs'}
+    - { name: 'postgresql-odbc'}
+    - { name: 'postgresql-plperl'}
+    - { name: 'postgresql-plpython'}
+    - { name: 'postgresql-pltcl'}
+    - { name: 'postgresql-server'}
+    - { name: 'postgresql-test'}
+    - { name: 'ambari-log4j'}
+    - { name: 'ambari-metrics'}
+    - { name: 'ambari-agent'}
+    - { name: 'ambari-server'}
+    - { name: 'bigtop'}
+    - { name: 'hdp-select'}
+    - { name: 'bigtop-jsvc'}
+    - { name: 'bigtop-tomcat' }
+    - { name: 'mysql'}
+    - { name: 'ganglia-devel'}
+    - { name: 'ganglia-devel'}
+    - { name: 'ganglia-web'}
+    - { name: 'ganglia-gmetad'}
+    - { name: 'libganglia'}
+    - { name: 'ganglia-devel'}
+    - { name: 'postgresql-libs'}
+    - { name: 'ambari-server'}
+    - { name: 'ambari-agent'}
+    - { name: 'ambari-metrics*' }
+    - { name: 'extjs*' }
+    - { name: 'java-1.8.0-openjdk' }
+    - { name: 'java-1.8.0-openjdk-headless' }
+    - { name: 'java-1.5.0-gcj' }
+
+
+- hosts: all
+  name: Remove all HDP related files
+  remote_user: root
+  tasks:
+  - name: Erase all of the /usr/lib HDP related files
+    file: path={{item.path}} state=absent force=yes
+    with_items:
+    - { path: '/usr/lib/sqoop'}
+    - { path: '/usr/lib/hive-hcatalog'}
+    - { path: '/usr/lib/falcon'}
+    - { path: '/usr/lib/hadoop'}
+    - { path: '/usr/lib/flume'}
+    - { path: '/usr/lib/storm'}
+    - { path: '/usr/lib/hive'}
+    - { path: '/usr/lib/oozie'}
+    - { path: '/usr/lib/hadoop-hdfs'}
+    - { path: '/usr/lib/knox'}
+    - { path: '/usr/lib/ambari-agent'}
+    - { path: '/usr/lib/ambari-server'}
+    - { path: '/usr/lib/pgsql'}
+    - { path: '/usr/lib/ambari-metrics-kafka-sink' }
+    - { path: '/usr/lib/ambari-metrics-hadoop-sink' }
+    - { path: '/usr/lib/zookeeper*'}
+    - { path: '/usr/lib/nagios'}
+    - { path: '/usr/lib/python2.6/site-packages/ambari_server' }
+    - { path: '/usr/lib/python2.6/site-packages/ambari_agent' }
+    - { path: '/usr/lib/python2.6/site-packages/ambari_commons' }
+    - { path: '/usr/lib/python2.6/site-packages/ambari-jinja2' }
+    - { path: '/usr/lib/python2.6/site-packages/resource_monitoring' }
+    - { path: '/usr/lib/python2.6/site-packages/ambari_simplejson' }
+
+  - name: Erase all of the /usr/bin HDP related files
+    file: path={{item.path}} state=absent force=yes
+    with_items:
+    - { path: '/usr/bin/zookeeper-client'}
+    - { path: '/usr/bin/spark-sql'}
+    - { path: '/usr/bin/spark-class' }
+    - { path: '/usr/bin/sqoop-codegen' }
+    - { path: '/usr/bin/phoenix-psql' }
+    - { path: '/usr/bin/phoenix-queryserver' }
+    - { path: '/usr/bin/phoenix-sqlline' }
+    - { path: '/usr/bin/phoenix-sqlline-thin' }
+    - { path: '/usr/bin/ranger-kms' }
+    - { path: '/usr/bin/sqoop-list-databases' }
+    - { path: '/usr/bin/run-example'}
+    - { path: '/usr/bin/pyspark'}
+    - { path: '/usr/bin/atlas-start' }
+    - { path: '/usr/bin/atlas-stop' }
+    - { path: '/usr/bin/pig'}
+    - { path: '/usr/bin/hive'}
+    - { path: '/usr/bin/hdfs'}
+    - { path: '/usr/bin/hcat'}
+    - { path: '/usr/bin/hadoop'}
+    - { path: '/usr/bin/yarn'}
+    - { path: '/usr/bin/spark-submit'}
+    - { path: '/usr/bin/spark-shell'}
+    - { path: '/usr/bin/class'}
+    - { path: '/usr/bin/mapred'}
+    - { path: '/usr/bin/beeline'}
+    - { path: '/usr/bin/worker-lanucher'}
+    - { path: '/usr/bin/storm-slider'}
+    - { path: '/usr/bin/storm'}
+    - { path: '/usr/bin/sqoop-job'}
+    - { path: '/usr/bin/sqoop-import-all-tables'}
+    - { path: '/usr/bin/sqoop-eval'}
+    - { path: '/usr/bin/slider'}
+    - { path: '/usr/bin/ranger-admin-stop'}
+    - { path: '/usr/bin/ranger-admin-start'}
+    - { path: '/usr/bin/kafka'}
+    - { path: '/usr/bin/hiveserver2'}
+    - { path: '/usr/bin/hbase'}
+    - { path: '/usr/bin/falcon'}
+    - { path: '/usr/bin/accumulo'}
+    - { path: '/usr/bin/zookeeper-server-cleanup'}
+    - { path: '/usr/bin/zookeeper-server'}
+    - { path: '/usr/bin/sqoop-version'}
+    - { path: '/usr/bin/sqoop-metastore'}
+    - { path: '/usr/bin/sqoop-merge'}
+    - { path: '/usr/bin/sqoop-list-tables'}
+    - { path: '/usr/bin/sqoop-list-database'}
+    - { path: '/usr/bin/sqoop-import'}
+    - { path: '/usr/bin/sqoop-help'}
+    - { path: '/usr/bin/sqoop-create-hive-table'}
+    - { path: '/usr/bin/sqoop-cogen'}
+    - { path: '/usr/bin/sqoop'}
+    - { path: '/usr/bin/ranger-usersync-stop'}
+    - { path: '/usr/bin/ranger-usersync-start'}
+    - { path: '/usr/bin/oozied.sh'}
+    - { path: '/usr/bin/oozie'}
+    - { path: '/usr/bin/mahout'}
+    - { path: '/usr/bin/sqoop-export'}
+    - { path: '/usr/bin/flume-ng'}
+  - name: Erase the HDP-UTILS repository
+    yumrepo: name=HDP-UTILS  state=absent 
+  - name: Erase the HDP repository
+    yumrepo: name=HDP  state=absent
+  - name: Erase the ambari repository
+    yumrepo: name=ambari  state=absent
+
+
+  - name: Erase all of the /var.lib/yum/repos/x86_64/6 HDP related files
+    file: path={{item.path}} state=absent force=yes
+    with_items:
+    - { path: '/var.lib/yum/repos/x86_64/6/Updates-ambari*'}
+
+  - name: Erase all of the /var/lib HDP related files
+    file: path={{item.path}} state=absent force=yes
+    with_items:
+    - { path: '/var/lib/pgsql/data/'}
+    - { path: '/var/lib/mysql'}
+    - { path: '/var/lib/oozie' }
+    - { path: '/var/lib/pgsql'}
+    - { path: '/var/lib/zookeeper' }
+    - { path: '/var/lib/hadoop-hdfs' }
+    - { path: '/var/lib/ganglia' }
+    - { path: '/var/lib/ganglia-web' }
+    - { path: '/var/lib/hdfs' }
+    - { path: '/var/lib/falcon' }
+    - { path: '/var/lib/hive' }
+    - { path: '/var/lib/hue' }
+    - { path: '/var/lib/flume' }
+    - { path: '/var/lib/knox' }
+    - { path: '/var/lib/pgsql' }
+    - { path: '/var/lib/ambari-metrics-hadoop-sink' }
+    - { path: '/var/lib/ambari-metrics-collector' }
+    - { path: '/var/lib/ambari-metrics-kafka-sink' }
+    - { path: '/var/lib/yum/repos/x86_64/6/Updates-ambari*' }
+    - { path: '/var/lib/yum/repos/x86_64/6/ambari*' }
+    - { path: '/var/lib/ambari-agent' }
+    - { path: '/var/lib/ambari-server'}
+    - { path: '/var/lib/atlas'}
+    - { path: '/var/lib/atlas-metdata'}
+    - { path: '/var/lib/hadoop-httpfs'}
+    - { path: '/var/lib/hadoop-mapreduce'}
+    - { path: '/var/lib/hadoop-yarn'}
+    - { path: '/var/lib/slider'}
+    - { path: '/var/lib/yum/repos/x86_64/6/Updates-ambari*' }
+
+  - name: Erase all of the /etc HDP related files
+    file: path={{item.path}} state=absent
+    with_items:
+    - { path: '/etc/nagios' }
+    - { path: '/etc/atlas' }
+    - { path: '/etc/ams-hbase' }
+    - { path: '/etc/ambari-metrics-collector' }
+    - { path: '/etc/hadoop'}
+    - { path: '/etc/hbase'}   
+    - { path: '/etc/mahout'}
+    - { path: '/etc/hive'}
+    - { path: '/etc/hive-webhcat'}
+    - { path: '/etc/flume'}
+    - { path: '/etc/falcon'}
+    - { path: '/etc/ambari-metrics-monitor'}
+    - { path: '/etc/hadoop-httpfs'}
+    - { path: '/etc/oozie'}
+    - { path: '/etc/storm'}
+    - { path: '/etc/spark'}
+    - { path: '/etc/storm-slider-client'}
+    - { path: '/etc/tez'}
+    - { path: '/etc/ambari-agent'}
+    - { path: '/etc/ambari-server'}
+    - { path: '/etc/kafka'}
+    - { path: '/etc/knox'}
+    - { path: '/etc/ranger'}
+    - { path: '/etc/phoenix'}
+    - { path: '/etc/sqoop'}
+    - { path: '/etc/zookeeper'}
+    - { path: '/etc/hive-hcatalog'}
+    - { path: '/etc/slider'}
+    - { path: '/etc/ambari.repo.bak'}
+    - { path: '/etc/yum.repos.d/ambari.repo'}
+    - { path: '/etc/yum.repos.d/HDP.repo'}
+    - { path: '/etc/yum.repos.d/HDP-UTILS.repo'}
+    - { path: '/etc/ambari.repo.bak'}
+    - { path: '/etc/ganglia'} 
+    - { path: '/etc/hue'}
+    - { path: '/etc/pig'}
+    - { path: '/etc/accumulo'}
+    - { path: '/etc/rc.d/rc.d/K20ambari*' }
+    - { path: '/etc/ambari-server'}
+    - { path: '/etc/postgresql'}
+    - { path: '/etc/rcd/rc3.d/S95ambari-server'}
+    - { path: '/etc/rcd/rc5.d/S95ambari-server'}
+    - { path: '/etc/rcd/rc1.d/S95ambari-server'}
+    - { path: '/etc/rcd/rc2.d/S95ambari-server'}
+    - { path: '/etc/rcd/rc4.d/S95ambari-server'}
+    - { path: '/etc/rcd/rc0.d/K20ambari-server'}
+    - { path: '/etc/rcd/rc1.d/K20ambari-server'}
+    - { path: '/etc/rcd/rc2.d/K20ambari-server'}
+    - { path: '/etc/rcd/rc6.d/K20ambari-server'}
+    - { path: '/etc/rc.d/rc*/*ambari*' }
+  - name: Delete rc ambari agent and server files
+    shell: rm -rf rc?.d/???ambari-*
+
+
+  - name: Erase all of the /var/run HDP related files
+    file: path={{item.path}} state=absent
+    with_items:
+    - { path: '/var/run/nagios' }
+    - { path: '/var/run/ranger' }
+    - { path: '/var/run/accumulo' }
+    - { path: '/var/run/hadoop'}
+    - { path: '/var/run/hbase'}
+    - { path: '/var/run/zookeeper'}
+    - { path: '/var/run/flume'}
+    - { path: '/var/run/webhcat'}
+    - { path: '/var/run/hadoop-yarn'}
+    - { path: '/var/run/hadoop-mapreduce'}
+    - { path: '/var/run/knox'}
+    - { path: '/var/run/kafka'}
+    - { path: '/var/run/ambari-server'}
+    - { path: '/var/run/ganglia'}
+    - { path: '/var/run/storm'}
+    - { path: '/var/run/hive'}
+    - { path: '/var/run/oozie'}
+    - { path: '/var/run/falcon'}
+    - { path: '/var/run/ambari-metrics-monitor'}
+    - { path: '/var/run/hue'}
+    - { path: '/var/run/accumuloe'}
+    - { path: '/var/run/atlas'}
+    - { path: '/var/run/hive-hcatalog'}
+    - { path: '/var/run/spark'}
+    - { path: '/var/run/sqoop'}
+
+  - name: Erase all of the /var/log HDP related files
+    file: path={{item.path}} state=absent
+    with_items:
+    - { path: '/var/log/nagios' }
+    - { path: '/var/log/ranger' }                   
+    - { path: '/var/log/atlas' }
+    - { path: '/var/log/accumulo' }
+    - { path: '/var/log/sqoop' }
+    - { path: '/var/log/hive-hcatalog' }
+    - { path: '/var/log/hadoop'}
+    - { path: '/var/log/hbase'}
+    - { path: '/var/log/zookeeper'}
+    - { path: '/var/log/flume'}
+    - { path: '/var/log/storm'}
+    - { path: '/var/log/hadoop-yarn'}    
+    - { path: '/var/log/hadoop-mapreduce'}   
+    - { path: '/var/log/knox'}
+    - { path: '/var/log/kafka'}
+    - { path: '/var/log/ambari-server'}
+    - { path: '/var/log/ambari-agent'}
+    - { path: '/var/log/ambari-metrics-collector'}
+    - { path: '/var/log/hive'}
+    - { path: '/var/log/oozie'}
+    - { path: '/var/log/falcon'}
+    - { path: '/var/log/webhcat'}
+    - { path: '/var/log/ambari-metrics-monitor'}
+    - { path: '/var/log/anaconda'}
+    - { path: '/var/log/hue'}
+    - { path: '/var/log/spark'}
+    - { path: '/var/log/yum.log'}
+    - { path: '/var/log/audit'}
+    - { path: '/var/log/${system:java.io.tmpdir}' }
+
+
+  - name: Erase all of the /var HDP related files
+    file: path={{item.path}} state=absent
+    with_items:
+    - { path: '/var/nagios' } 
+    - { path: '/var/tmp/oozie' }  
+    - { path: '/var/tmp/sqoop' } 
+    - { path: '/var/spool/accumulo' }
+    - { path: '/var/log/anaconda.\\\\*' }  
+ 
+  - name: Erase all of the /tmp HDP related files
+    file: path={{item.path}} state=absent
+    with_items:
+    - { path: '/tmp/hive' } 
+    - { path: '/tmp/ambari-qa'}       
+    - { path: '/tmp/sqoop-ambari-qa'}
+    - { path: '/tmp/hadoop-hdfs'}
+    - { path: '/tmp/setupAgent*'}
+    - { path: '/tmp/ambari.properties*'}
+    - { path: '/tmp/ganglia*'}
+    - { path: '/tmp/gmond.log'}
+    - { path: '/tmp/HDP-artifacts'}
+    - { path: '/tmp/hbase-root'}
+    - { path: '/tmp'}
+    - { path: '/hadoop/hbase'}
+    - { path: '/hadoop'}
+
+    - { path: '/tmp/ambari.properties.\\\\*' }
+    - { path: '/tmp/hadoop-ambari-qa' }
+    - { path: '/tmp/ambari-commons' }
+    - { path: '/tmp/setupAgent\\\\*' }
+    - { path: '/tmp/hbase-hbase' }
+
+
+  - name: Erase all of the /usr HDP related files
+    file: path={{item.path}} state=absent
+    with_items:
+    - { path: '/usr/hdp'}
+    - { path: '/usr/jdk64'}
+    - { path: '/kafka-logs'}
+
+
+  - name: Erase all of the /usr/sbin HDP related files
+    file: path={{item.path}} state=absent
+    with_items:
+    - { path: '/usr/sbin/ambari-metrics-monitor' }
+    - { path: '/usr/sbin/ambari_server_main.pyc' }
+
+  - name: Remove HDP Users
+    user: name={{item.name}} state=absent remove=yes
+    with_items:
+    - { name: 'ambari-qa' }
+    - { name: 'hbase' }
+    - { name: 'nagios' }
+    - { name: 'oozie' }
+    - { name: 'hcat' }
+    - { name: 'hive' }
+    - { name: 'yarn' }
+    - { name: 'hdfs' }
+    - { name: 'mapred' }
+    - { name: 'zookeeper' }
+    - { name: 'rrdcached' }
+    - { name: 'sqoop' }
+    - { name: 'storm' }
+    - { name: 'ams' }
+    - { name: 'falcon' }
+    - { name: 'tez' }
+    - { name: 'spark' }
+    - { name: 'flume' }
+    - { name: 'kafka' }
+    - { name: 'knox' }
+    - { name: 'pig' }
+    - { name: 'assumulo' }
+    - { name: 'hue' }
+    - { name: 'atlas' }
+    - { name: 'accumulo' }
+    - { name: 'mahout' }
+    - { name: 'slider' }
+    - { name: 'postgres' }
+    - { name: 'ranger' }
+    - { name: 'kms' }
+  - name: Remove HDP Groups
+    group: name={{item.group}} state=absent
+    with_items:
+    - { group: 'hadoop' }
+    - { group: 'ranger' }
+    - { group: 'slider' }
+    - { group: 'knox' }
+    - { group: 'spark' }
+    - { group: 'hdfs' }
+    - { group: 'falcon' }
+    - { group: 'flume' }
+    - { group: 'hbase' }
+    - { group: 'hive' }
+    - { group: 'kafka' }
+    - { group: 'oozie' }
+    - { group: 'storm' }
+    - { group: 'hue' }
+    - { group: 'solr' }
+  - name: Remove HDP opt files
+    user: name={{item.name}} state=absent remove=yes
+    with_items:
+    - { name: 'lucidworks-hdpsearch' }
+
+  - name: Create temp directory
+    file: path=/tmp group=root owner=root mode="u=rwx,g=rwx,o=rwx" state=directory
+  - name: Create log directory
+    file: path=/log group=root owner=root mode="u=rwx,g=rwx,o=rwx" state=directory
+  - name: Add HDP Ambari assumed components
+    yum: name={{item.name}} state=latest
+    with_items:
+    - { name: 'wget'}
+    - { name: 'unzip'}
+    - { name: 'yum-utils'}
+    - { name: 'createrepo'}
+    - { name: 'yum-plugin-priorities'}
+    - { name: 'git'}
+    - { name: 'ntp'} 
+    - { name: 'ntpdate'} 
+    - { name: 'ntp-doc'} 
+    - { name: 'libselinux-python'} 
+  - name: Remove Root top level working files   
+    file: path={{item.path}} state=absent
+    with_items:
+    - { path: '/Root/derby.log' } 
+    - { path: '/Root/.beeline' } 
+
+
+  - name: Yum Clean
+    command: "yum clean all"
+
+
+
+
+  
+    
+
+    
+    
+    
+                            

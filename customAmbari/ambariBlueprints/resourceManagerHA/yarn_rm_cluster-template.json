@@ -1,0 +1,34 @@
+{
+  "blueprint": "yarn_ha_blueprint",
+  "default_password": "admin",
+  "configurations": [
+    { "yarn-site" : {
+        "yarn.resourcemanager.zk-address" : "c6402.ambari.apache.org:2181,c6403.ambari.apache.org:2181,c6404.ambari.apache.org:2181”,
+        ”yarn.resourcemanager.hostname.rm1" : "server3.hdp",
+        "yarn.resourcemanager.hostname.rm2" : "server4.hdp"
+     }}
+  ],
+  "host_groups": [
+    { "hosts": [
+        { "fqdn": "server1.hdp" }
+      ], "name": "gateway"
+    },
+    { "hosts": [
+        { "fqdn": "server2.hdp" }
+      ], "name": "master_1"
+    },
+    { "hosts": [
+        { "fqdn": "server3.hdp" }
+      ], "name": "master_2"
+    },
+    { "hosts": [
+        { "fqdn": "server4.hdp" }
+      ], "name": "master_3"
+    },
+    { "hosts": [
+        { "fqdn": "server5.hdp" }
+      ],
+      "name": "slave_1"    
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+---
+- remote_user: root 
+  hosts: all
+  name: Remove HDP installed packages
+  serial: 10
+  vars:
+    # password created with: python -c 'import crypt; print crypt.crypt(This is my Password, $1$SomeSalt$)'
+  tasks:
+# TODO: Add a method to stop all of the services first
+  - name: stop ambari-agents
+    command: "ambari-agent stop"
+    ignore_errors: True
+
+  - name: stop ambari-server
+    command: "ambari-server stop"
+    ignore_errors: True
+
+  - name: stop any remaining Java processes
+    command: "pkill -9 -f java"
+    ignore_errors: True
+
+  - name: stop the remaining python process
+    command: "pkill -9 -f python"
+    ignore_errors: True
